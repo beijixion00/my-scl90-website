@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCL-90心理测评结果</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --danger-color: #F44336;
+            --info-color: #2196F3;
+            --light-color: #f8f9fa;
+            --dark-color: #1a1a1a;
+            --gray-color: #666666;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --border-color: #e0e0e0;
+            --background-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --score-color: #4CAF50;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--dark-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 顶部结果区域 */
+        .results-header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .test-info h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .test-date {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .main-result {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .score-circle:hover {
+            transform: scale(1.05);
+        }
+
+        .score-circle.excellent {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .score-circle.good {
+            background: linear-gradient(135deg, #f39c12, #f1c40f);
+        }
+
+        .score-circle.attention {
+            background: linear-gradient(135deg, #e67e22, #e74c3c);
+        }
+
+        .score-circle.concern {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+        }
+
+        .score-number {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .score-text {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .result-status {
+            text-align: left;
+            max-width: 300px;
+        }
+
+        .status-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .status-desc {
+            color: #7f8c8d;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* 主要发现区域 */
+        .main-findings {
+            margin-bottom: 30px;
+        }
+
+        .findings-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .findings-card h3 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .findings-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .trait-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .trait-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .trait-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .trait-item.trait-normal .trait-icon {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .trait-item.trait-mild .trait-icon {
+            background: linear-gradient(135deg, #f39c12, #f1c40f);
+        }
+
+        .trait-item.trait-moderate .trait-icon {
+            background: linear-gradient(135deg, #e67e22, #e74c3c);
+        }
+
+        .trait-item.trait-severe .trait-icon {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+        }
+
+        .trait-info h4 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin: 0 0 5px 0;
+            font-weight: 600;
+        }
+
+        .trait-info p {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin: 0 0 8px 0;
+            font-weight: 500;
+        }
+
+        .trait-desc {
+            font-size: 13px;
+            color: #95a5a6;
+            line-height: 1.4;
+        }
+
+        /* 简化建议区域 */
+        .simple-advice {
+            margin-bottom: 30px;
+        }
+
+        .advice-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .advice-card h3 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .advice-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .advice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .advice-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .advice-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .advice-text h4 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+        }
+
+        .advice-text p {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 50vh;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .error-message h2 {
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+
+        .error-message p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .results-header {
+                padding: 25px 20px;
+                margin-bottom: 20px;
+            }
+
+            .test-info h1 {
+                font-size: 20px;
+            }
+
+            .main-result {
+                flex-direction: column;
+                gap: 25px;
+            }
+
+            .score-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            .score-number {
+                font-size: 28px;
+            }
+
+            .result-status {
+                text-align: center;
+                max-width: none;
+            }
+
+            .findings-card, .advice-card {
+                padding: 20px;
+            }
+
+            .trait-item, .advice-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .trait-info, .advice-text {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loadingIndicator" class="loading">
+            <div class="loading-spinner"></div>
+        </div>
+
+        <div id="errorContainer" style="display: none;">
+            <div class="error-message">
+                <h2><i class="fas fa-exclamation-circle"></i> 结果不存在</h2>
+                <p>抱歉，您访问的测评结果不存在或已被删除。</p>
+                <a href="/" class="back-btn">
+                    <i class="fas fa-home"></i> 返回首页
+                </a>
+            </div>
+        </div>
+
+        <div id="resultsContainer" style="display: none;">
+            <!-- 顶部总览区域 -->
+            <div class="results-header">
+                <div class="test-info">
+                    <h1>SCL-90心理健康测评报告</h1>
+                    <p class="test-date">测试日期：<span id="testDate"></span></p>
+                </div>
+                <div class="main-result">
+                    <div class="score-circle" id="scoreCircle">
+                        <span class="score-number" id="totalScore">0</span>
+                        <span class="score-text">总分</span>
+                    </div>
+                    <div class="result-status">
+                        <h2 class="status-title" id="statusTitle">心理健康状态良好</h2>
+                        <p class="status-desc" id="statusDesc">您的心理状态总体健康，无明显心理症状，继续保持良好的生活习惯。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主要发现区域 -->
+            <div class="main-findings">
+                <div class="findings-card">
+                    <h3><i class="fas fa-search"></i> 主要发现</h3>
+                    <div class="findings-content" id="findingsContent">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 简化建议区域 -->
+            <div class="simple-advice">
+                <div class="advice-card">
+                    <h3><i class="fas fa-lightbulb"></i> 温馨提示</h3>
+                    <div class="advice-content" id="adviceContent">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部信息 -->
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="/" class="back-btn">
+                    <i class="fas fa-home"></i> 返回首页
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时获取结果ID并加载数据
+        document.addEventListener('DOMContentLoaded', function() {
+            const pathParts = window.location.pathname.split('/');
+            const resultId = pathParts[pathParts.length - 1];
+
+            if (resultId && resultId !== 'results') {
+                loadResults(resultId);
+            } else {
+                showError();
+            }
+        });
+
+        // 加载测评结果
+        async function loadResults(resultId) {
+            try {
+                const response = await fetch(`/api/results/${resultId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayResults(data);
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('加载结果失败:', error);
+                showError();
+            }
+        }
+
+        // 显示结果
+        function displayResults(data) {
+            const { assessment, results, totalScore } = data;
+
+            // 隐藏加载动画
+            document.getElementById('loadingIndicator').style.display = 'none';
+
+            // 显示结果容器
+            document.getElementById('resultsContainer').style.display = 'block';
+
+            // 设置测试日期
+            const testDate = new Date(assessment.end_time || assessment.start_time);
+            document.getElementById('testDate').textContent = testDate.toLocaleString('zh-CN');
+
+            // 计算总体状态
+            const overallStatus = getOverallStatus(totalScore);
+
+            // 设置分数圆圈
+            const scoreCircle = document.getElementById('scoreCircle');
+            scoreCircle.className = `score-circle ${overallStatus.class}`;
+            document.getElementById('totalScore').textContent = totalScore;
+
+            // 设置状态描述
+            document.getElementById('statusTitle').textContent = overallStatus.title;
+            document.getElementById('statusDesc').textContent = overallStatus.description;
+
+            // 生成主要发现
+            const topTraits = getTopTraits(results);
+            document.getElementById('findingsContent').innerHTML = topTraits.map(trait => `
+                <div class="trait-item ${trait.class}">
+                    <div class="trait-icon">
+                        <i class="${trait.icon}"></i>
+                    </div>
+                    <div class="trait-info">
+                        <h4>${trait.name}</h4>
+                        <p>${trait.score}分 - ${trait.level}</p>
+                        <span class="trait-desc">${trait.description}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // 生成建议
+            const recommendations = getSimpleRecommendations(results);
+            document.getElementById('adviceContent').innerHTML = recommendations.map(rec => `
+                <div class="advice-item">
+                    <div class="advice-icon">
+                        <i class="${rec.icon}"></i>
+                    </div>
+                    <div class="advice-text">
+                        <h4>${rec.title}</h4>
+                        <p>${rec.content}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 显示错误
+        function showError() {
+            document.getElementById('loadingIndicator').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'block';
+        }
+
+        // 获取总体状态
+        function getOverallStatus(totalScore) {
+            if (totalScore <= 129) {
+                return {
+                    title: '心理健康状态良好',
+                    description: '您的心理状态总体健康，无明显心理症状，继续保持良好的生活习惯。',
+                    class: 'excellent'
+                };
+            } else if (totalScore <= 179) {
+                return {
+                    title: '有轻微心理困扰',
+                    description: '您存在一些轻微的心理症状，通过自我调节和适当休息可以改善。',
+                    class: 'good'
+                };
+            } else if (totalScore <= 229) {
+                return {
+                    title: '需要关注心理健康',
+                    description: '您的心理症状较为明显，建议关注心理健康状况，必要时寻求专业帮助。',
+                    class: 'attention'
+                };
+            } else {
+                return {
+                    title: '建议寻求专业帮助',
+                    description: '您的心理症状较为严重，强烈建议寻求专业心理咨询师或医生的帮助。',
+                    class: 'concern'
+                };
+            }
+        }
+
+        // 获取主要特质
+        function getTopTraits(results) {
+            const traits = Object.entries(results).map(([key, result]) => ({
+                key,
+                name: result.name,
+                score: result.tScore,
+                level: result.level,
+                icon: getTraitIcon(key),
+                class: getTraitClass(result.level),
+                description: getSimpleTraitDescription(key, result.level)
+            }));
+
+            // 按分数排序，取前3个最需要关注的
+            return traits.sort((a, b) => b.score - a.score).slice(0, 3);
+        }
+
+        // 获取特质图标
+        function getTraitIcon(key) {
+            const icons = {
+                somatization: 'fas fa-heartbeat',
+                obsessive_compulsive: 'fas fa-sync',
+                interpersonal_sensitivity: 'fas fa-users',
+                depression: 'fas fa-cloud-rain',
+                anxiety: 'fas fa-brain',
+                hostility: 'fas fa-angry',
+                phobic_anxiety: 'fas fa-ghost',
+                paranoid_ideation: 'fas fa-eye',
+                psychoticism: 'fas fa-brain',
+                additional: 'fas fa-star'
+            };
+            return icons[key] || 'fas fa-chart-line';
+        }
+
+        // 获取特质样式类
+        function getTraitClass(level) {
+            switch (level) {
+                case '正常': return 'trait-normal';
+                case '轻度': return 'trait-mild';
+                case '中度': return 'trait-moderate';
+                case '严重': return 'trait-severe';
+                default: return 'trait-normal';
+            }
+        }
+
+        // 获取简单特质描述
+        function getSimpleTraitDescription(key, level) {
+            const descriptions = {
+                somatization: {
+                    正常: '身体状况良好，无明显不适',
+                    轻度: '偶有轻微身体不适，与压力相关',
+                    中度: '身体症状较明显，需要关注',
+                    严重: '身体症状严重，建议就医检查'
+                },
+                obsessive_compulsive: {
+                    正常: '思维行为自然灵活',
+                    轻度: '偶有重复思考，不影响生活',
+                    中度: '强迫症状较明显，造成困扰',
+                    严重: '强迫症状严重，影响日常生活'
+                },
+                interpersonal_sensitivity: {
+                    正常: '人际交往自然自信',
+                    轻度: '偶尔在意他人看法，正常范围',
+                    中度: '人际敏感较明显，容易受影响',
+                    严重: '严重人际敏感，影响社交'
+                },
+                depression: {
+                    正常: '情绪积极稳定',
+                    轻度: '偶有情绪低落，能自行调节',
+                    中度: '情绪低落明显，兴趣减退',
+                    严重: '严重抑郁症状，需要专业帮助'
+                },
+                anxiety: {
+                    正常: '心态平和，应对能力强',
+                    轻度: '偶有紧张担忧，能控制',
+                    中度: '焦虑情绪明显，经常担心',
+                    严重: '严重焦虑，影响日常生活'
+                },
+                hostility: {
+                    正常: '情绪稳定，理性处理冲突',
+                    轻度: '偶有烦躁情绪，能控制',
+                    中度: '敌对情绪较强，容易发怒',
+                    严重: '严重敌对情绪，影响人际关系'
+                },
+                phobic_anxiety: {
+                    正常: '心理状态稳定，无特殊恐惧',
+                    轻度: '对某些事物轻微担忧',
+                    中度: '恐惧症状明显，回避特定情境',
+                    严重: '严重恐惧，严重影响生活'
+                },
+                paranoid_ideation: {
+                    正常: '思维客观，信任他人',
+                    轻度: '偶有疑虑，能理性分析',
+                    中度: '偏执想法明显，容易误解他人',
+                    严重: '严重偏执观念，影响人际关系'
+                },
+                psychoticism: {
+                    正常: '思维清晰，适应现实',
+                    轻度: '偶有独特想法，思维正常',
+                    中度: '思维有些特殊，需要关注',
+                    严重: '明显异常思维，需要专业评估'
+                },
+                additional: {
+                    正常: '日常功能良好，生活规律',
+                    轻度: '偶有轻微功能不适',
+                    中度: '日常功能受一定影响',
+                    严重: '日常功能严重受损'
+                }
+            };
+            return descriptions[key]?.[level] || '需要进一步评估';
+        }
+
+        // 获取简化建议
+        function getSimpleRecommendations(results) {
+            const recommendations = [];
+            const problemTraits = Object.entries(results).filter(([key, result]) => result.level !== '正常');
+
+            if (problemTraits.length === 0) {
+                recommendations.push({
+                    icon: 'fas fa-smile',
+                    title: '继续保持',
+                    content: '您的心理健康状态良好，继续保持规律作息、适度运动和积极心态。'
+                });
+            } else {
+                const hasAnxiety = problemTraits.some(([key]) => key === 'anxiety');
+                const hasDepression = problemTraits.some(([key]) => key === 'depression');
+                const hasInterpersonal = problemTraits.some(([key]) => key === 'interpersonal_sensitivity');
+
+                if (hasAnxiety) {
+                    recommendations.push({
+                        icon: 'fas fa-spa',
+                        title: '放松减压',
+                        content: '尝试深呼吸、冥想或瑜伽等放松技巧，每天安排15-30分钟的安静时间。'
+                    });
+                }
+
+                if (hasDepression) {
+                    recommendations.push({
+                        icon: 'fas fa-sun',
+                        title: '积极生活',
+                        content: '保持规律作息，多参与户外活动，与亲友保持联系，培养兴趣爱好。'
+                    });
+                }
+
+                if (hasInterpersonal) {
+                    recommendations.push({
+                        icon: 'fas fa-comments',
+                        title: '改善人际',
+                        content: '主动与信任的朋友交流，练习表达自己的想法，参与社交活动。'
+                    });
+                }
+
+                if (problemTraits.some(([key, result]) => result.level === '严重')) {
+                    recommendations.push({
+                        icon: 'fas fa-user-md',
+                        title: '寻求帮助',
+                        content: '建议寻求专业心理咨询师或医生的帮助，获得专业的指导和支持。'
+                    });
+                }
+            }
+
+            return recommendations;
+        }
+    </script>
+</body>
+</html>
