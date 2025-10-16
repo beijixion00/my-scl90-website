@@ -1185,19 +1185,18 @@ app.get('/api/results/:resultId', (req, res) => {
   });
 });
 
-// 结果查看页面
 app.get('/results/:resultId', (req, res) => {
   const { resultId } = req.params;
 
-  // 获取测评数据
-  fetch(`http://localhost:${PORT}/api/results/${resultId}`)
-    .then(response => response.json())
-    .then(data => {
-      res.send(createResultsPage(data));
-    })
-    .catch(error => {
-      res.status(500).send('获取结果失败');
-    });
+  // 直接查找测评数据，无需网络调用 ✅
+  const assessment = assessments.find(a => a.result_id === resultId && a.end_time);
+  if (!assessment) {
+    return res.status(404).send(/* 错误页面 */);
+  }
+
+  // 获取详细结果...
+  const data = { assessment, results: formattedResults, totalScore: assessment.total_score };
+  res.send(createResultsPage(data));
 });
 
 // 创建结果页面HTML
