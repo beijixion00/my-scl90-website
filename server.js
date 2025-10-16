@@ -1189,15 +1189,56 @@ app.get('/api/results/:resultId', (req, res) => {
 app.get('/results/:resultId', (req, res) => {
   const { resultId } = req.params;
 
-  // 获取测评数据
-  fetch(`http://localhost:${PORT}/api/results/${resultId}`)
-    .then(response => response.json())
-    .then(data => {
-      res.send(createResultsPage(data));
-    })
-    .catch(error => {
-      res.status(500).send('获取结果失败');
-    });
+  // 直接查找测评数据，无需网络调用
+  const assessment = assessments.find(a => a.result_id === resultId && a.end_time);
+  if (!assessment) {
+    return res.status(404).send(`
+      <!DOCTYPE html>
+      <html lang="zh-CN">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>结果不存在</title>
+          <style>
+              body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }
+              .container { max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+              h1 { color: #e74c3c; margin-bottom: 20px; }
+              p { color: #666; margin-bottom: 30px; }
+              .btn { background: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+              <h1>📄 结果不存在</h1>
+              <p>该测评结果不存在或已被删除。</p>
+              <a href="/" class="btn">返回首页</a>
+          </div>
+      </body>
+      </html>
+    `);
+  }
+
+  // 获取详细结果
+  const assessmentResults = results.filter(r => r.assessment_id === assessment.id);
+
+  // 转换结果格式
+  const formattedResults = {};
+  assessmentResults.forEach(result => {
+    formattedResults[result.dimension] = {
+      name: getDimensionName(result.dimension),
+      tScore: result.t_score,
+      level: result.level,
+      score: result.dimension_score
+    };
+  });
+
+  const data = {
+    assessment,
+    results: formattedResults,
+    totalScore: assessment.total_score
+  };
+
+  res.send(createResultsPage(data));
 });
 
 // 创建结果页面HTML
