@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server-final.js",
+    "dev": "node server.js",
+    "cloud": "node server-cloud.js",
+    "final": "node server-final.js",
+    "memory": "node server.js",
+    "build": "echo 'Build completed for Cloudflare Pages'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,6 +19,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "mongoose": "^8.19.1",
     "sqlite3": "^5.1.7"
   }
 }
